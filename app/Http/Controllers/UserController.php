@@ -23,7 +23,7 @@ class UserController extends Controller
         $data = collect();
         
         // query builder
-        User::orderBy('id')->chunk(2000, function($datas) use ($data) {
+        User::where('Kode','like',substr($this->user->Kode,0,2).'%')->orderBy('id')->chunk(2000, function($datas) use ($data) {
             foreach ($datas as $d) {
                 $data->push($d);
             }
@@ -98,7 +98,7 @@ class UserController extends Controller
         $user->TanggalBerhentiKerja = $request->TanggalBerhentiKerja;
         $user->Keterangan = $request->Keterangan;
         $user->DiUbahOleh = $this->user->Kode;
-        $user->Gudang = $request->Gudang;
+        // $user->Gudang = $request->Gudang;
         $user->save();
 
         return response()->json([

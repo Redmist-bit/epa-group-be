@@ -57,6 +57,8 @@ class PeriodesController extends Controller
         $periode->Nama = $request->Nama;
         $periode->TglAwal = $request->TglAwal;
         $periode->TglAkhir = $request->TglAkhir;
+        $periode->TglAwalPayRoll = $request->TglAwalPayRoll;
+        $periode->TglAkhirPayRoll = $request->TglAkhirPayRoll;
         $periode->Status = $request->Status;
         $periode->DiUbahOleh = $this->user->Kode;
 
@@ -118,6 +120,8 @@ class PeriodesController extends Controller
         $periodes->Nama = $request->Nama;
         $periodes->TglAwal = $request->TglAwal;
         $periodes->TglAkhir = $request->TglAkhir;
+        $periodes->TglAwalPayRoll = $request->TglAwalPayRoll;
+        $periodes->TglAkhirPayRoll = $request->TglAkhirPayRoll;
         $periodes->Status = $request->Status;
         $periodes->DiUbahOleh = $this->user->Kode;
 

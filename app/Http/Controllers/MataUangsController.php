@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 use JWTAuth;
-use App\Models\Coa;
+use App\Models\MataUangs;
 use Illuminate\Http\Request;
 
-class CoaController extends Controller
+class MataUangsController extends Controller
 {
     protected $user;
 
@@ -20,7 +20,7 @@ class CoaController extends Controller
      */
     public function index()
     {
-        return Coa::where('Kode','like',substr($this->user->Kode,0,2).'%')->orderBy('Kode')->get();
+        return MataUangs::all();
     }
 
     /**
@@ -44,22 +44,15 @@ class CoaController extends Controller
         $this->validate($request, [
             "Kode" => "required",
         ]);
-
-        $coa = new Coa;
-        $coa->Kode = $request->Kode;
-        $coa->Nama = $request->Nama;
-        // $coa->Deskripsi = $request->Deksripsi;
-        // $coa->AccNo = $request->AccNo;
-        $coa->Memo = $request->Memo;
-        $coa->Aktif = $request->Aktif;
-        $coa->IsDetail = $request->IsDetail;
-        $coa->Sifat = $request->Sifat;
-        $coa->DiUbahOleh = $this->user->Kode;
-
-        if ($this->user->Coa()->save($coa)){
+        $mataUang = new MataUangs;
+        $mataUang->Kode = $request->Kode;
+        $mataUang->Nama = $request->Nama;
+        $mataUang->Aktif = $request->Aktif;
+        $mataUang->DiUbahOleh = $this->user->Kode;
+        if ($this->user->mataUangs()->save($mataUang)){
             return response()->json([
                 "status" => true,
-                "coa" => $coa
+                "mataUang" => $mataUang
             ]);
         } else {
             return response()->json([
@@ -72,22 +65,22 @@ class CoaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Coa  $gudangs
+     * @param  \App\Models\MataUangs  $mataUangs
      * @return \Illuminate\Http\Response
      */
-    public function show(Coa $coa, $id)
+    public function show(MataUangs $mataUangs, $id)
     {
-        $coa = Coa::find($id);
-        return $coa;
+        $mataUangs = MataUangs::find($id);
+        return $mataUangs;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Coa  $gudangs
+     * @param  \App\Models\MataUangs  $mataUangs
      * @return \Illuminate\Http\Response
      */
-    public function edit(Coa $coa)
+    public function edit(MataUangs $mataUangs)
     {
         //
     }
@@ -96,31 +89,25 @@ class CoaController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Coa  $coa
+     * @param  \App\Models\MataUangs  $mataUangs
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, MataUangs $mataUangs, $id)
     {
-        $this->validate($request, [
-            "Kode" => "required",
+        // $this->validate($request, [
+        //     "kode" => "required",
             
-        ]);
-        
-        $coa = Coa::find($id);
-        $coa->Kode = $request->Kode;
-        $coa->Nama = $request->Nama;
-        // $coa->Deskripsi = $request->Deskripsi;
-        // $coa->AccNo = $request->AccNo;
-        $coa->Memo = $request->Memo;
-        $coa->Aktif = $request->Aktif;
-        $coa->IsDetail = $request->IsDetail;
-        $coa->Sifat = $request->Sifat;
-        $coa->DiUbahOleh = $this->user->Kode;
+        // ]);
+        $mataUangs = MataUangs::find($id);
+        $mataUangs->Kode = $request->Kode;
+        $mataUangs->Nama = $request->Nama;
+        $mataUangs->Aktif = $request->Aktif;
+        $mataUangs->DiUbahOleh = $this->user->Kode;
 
-        if($coa->save()){
+        if($mataUangs->save()){
             return response()->json([
                 "status"=>true,
-                "coa"=>$coa
+                "mataUangs"=>$mataUangs
             ]);
         } else {
             return response()->json([
@@ -133,18 +120,18 @@ class CoaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Coa  $coa
+     * @param  \App\Models\MataUangs  $mataUangs
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(MataUangs $mataUangs, $id)
     {
-        $coa = Coa::find($id);
-        $coa->Aktif = false;
-        $coa->DiUbahOleh = $this->user->Kode;
-        if ($coa->save()){
+        $mataUangs = MataUangs::find($id);
+        $mataUangs->Aktif = false;
+        $mataUangs->DiUbahOleh = $this->user->Kode;
+        if ($mataUangs->save()){
             return response()->json([
                 "status"=> true,
-                "coa"=> $coa
+                "mataUangs"=> $mataUangs
             ]);
         } else {
             return response()->json([

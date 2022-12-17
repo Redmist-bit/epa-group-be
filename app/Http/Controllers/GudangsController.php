@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 use JWTAuth;
-use App\Models\Coa;
+use App\Models\Gudangs;
 use Illuminate\Http\Request;
 
-class CoaController extends Controller
+class GudangsController extends Controller
 {
     protected $user;
 
@@ -20,7 +20,7 @@ class CoaController extends Controller
      */
     public function index()
     {
-        return Coa::where('Kode','like',substr($this->user->Kode,0,2).'%')->orderBy('Kode')->get();
+        return Gudangs::where('Kode','like',substr($this->user->Kode,0,2).'%')->get();
     }
 
     /**
@@ -43,23 +43,23 @@ class CoaController extends Controller
     {
         $this->validate($request, [
             "Kode" => "required",
+            
+            
         ]);
 
-        $coa = new Coa;
-        $coa->Kode = $request->Kode;
-        $coa->Nama = $request->Nama;
-        // $coa->Deskripsi = $request->Deksripsi;
-        // $coa->AccNo = $request->AccNo;
-        $coa->Memo = $request->Memo;
-        $coa->Aktif = $request->Aktif;
-        $coa->IsDetail = $request->IsDetail;
-        $coa->Sifat = $request->Sifat;
-        $coa->DiUbahOleh = $this->user->Kode;
+        $gudang = new Gudangs;
+        $gudang->Kode = $request->Kode;
+        $gudang->Nama = $request->Nama;
+        $gudang->Alamat = $request->Alamat;
+        $gudang->Kota = $request->Kota;
+        $gudang->Memo = $request->Memo;
+        $gudang->Aktif = $request->Aktif;
+        $gudang->DiUbahOleh = $this->user->Kode;
 
-        if ($this->user->Coa()->save($coa)){
+        if ($this->user->gudangs()->save($gudang)){
             return response()->json([
                 "status" => true,
-                "coa" => $coa
+                "gudang" => $gudang
             ]);
         } else {
             return response()->json([
@@ -72,22 +72,22 @@ class CoaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Coa  $gudangs
+     * @param  \App\Models\Gudangs  $gudangs
      * @return \Illuminate\Http\Response
      */
-    public function show(Coa $coa, $id)
+    public function show(Gudangs $gudangs, $id)
     {
-        $coa = Coa::find($id);
-        return $coa;
+        $gudangs = Gudangs::find($id);
+        return $gudangs;
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Coa  $gudangs
+     * @param  \App\Models\Gudangs  $gudangs
      * @return \Illuminate\Http\Response
      */
-    public function edit(Coa $coa)
+    public function edit(Gudangs $gudangs)
     {
         //
     }
@@ -96,31 +96,29 @@ class CoaController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Coa  $coa
+     * @param  \App\Models\Gudangs  $gudangs
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,$id)
+    public function update(Request $request, Gudangs $gudangs, $id)
     {
-        $this->validate($request, [
-            "Kode" => "required",
+        // $this->validate($request, [
+        //     "Kode" => "required",
             
-        ]);
+        // ]);
         
-        $coa = Coa::find($id);
-        $coa->Kode = $request->Kode;
-        $coa->Nama = $request->Nama;
-        // $coa->Deskripsi = $request->Deskripsi;
-        // $coa->AccNo = $request->AccNo;
-        $coa->Memo = $request->Memo;
-        $coa->Aktif = $request->Aktif;
-        $coa->IsDetail = $request->IsDetail;
-        $coa->Sifat = $request->Sifat;
-        $coa->DiUbahOleh = $this->user->Kode;
+        $gudangs = Gudangs::find($id);
+        // $gudangs->Kode = $request->Kode;
+        $gudangs->Nama = $request->Nama;
+        $gudangs->Alamat = $request->Alamat;
+        $gudangs->Kota = $request->Kota;
+        $gudangs->Memo = $request->Memo;
+        $gudangs->Aktif = $request->Aktif;
+        $gudangs->DiUbahOleh = $this->user->Kode;
 
-        if($coa->save()){
+        if($gudangs->save()){
             return response()->json([
                 "status"=>true,
-                "coa"=>$coa
+                "gudangs"=>$gudangs
             ]);
         } else {
             return response()->json([
@@ -133,18 +131,18 @@ class CoaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Coa  $coa
+     * @param  \App\Models\Gudangs  $gudangs
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Gudangs $gudangs, $id)
     {
-        $coa = Coa::find($id);
-        $coa->Aktif = false;
-        $coa->DiUbahOleh = $this->user->Kode;
-        if ($coa->save()){
+        $gudangs = Gudangs::find($id);
+        $gudangs->Aktif = false;
+        $gudangs->DiUbahOleh = $this->user->Kode;
+        if ($gudangs->save()){
             return response()->json([
                 "status"=> true,
-                "coa"=> $coa
+                "gudangs"=> $gudangs
             ]);
         } else {
             return response()->json([
