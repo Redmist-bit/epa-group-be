@@ -26,7 +26,7 @@ class JabatanController extends Controller
     }
     // $request->$nama
     public function jabatandata(Request $request){
-        return Jabatan::where('jabatan', $request->jabatan)->get();
+        return Jabatan::where('jabatan', $request->jabatan)->where('perusahaan',substr($this->user->Kode,0,2))->get();
     }
 
     /**
