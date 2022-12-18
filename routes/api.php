@@ -14,6 +14,7 @@ use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\BarangsController;
 use App\Http\Controllers\SuppliersController;
 use App\Http\Controllers\MataUangsController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\DftHargaJualController;
 use App\Http\Controllers\DftHargaBeliController;
 
@@ -39,6 +40,7 @@ Route::group([
 ], function(){
     Route::resource("periodes", PeriodesController::class);
     Route::resource("mataUangs", MataUangsController::class);
+    Route::resource("unit", UnitController::class);
     Route::resource("barangs", BarangsController::class);
     Route::get("merk-barang", [BarangsController::class, 'merk']);
     Route::resource("gudangs", GudangsController::class);
