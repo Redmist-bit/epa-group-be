@@ -153,7 +153,7 @@ class BarangsController extends Controller
         // ]);
         // dd( !empty($request->StokLimit));
         //01/0000004
-        $last = Barangs::where('Kode','like',substr($this->user->Kode,0,2).'%')->first('Kode');
+        $last = Barangs::where('Kode','like',substr($this->user->Kode,0,2).'%')->orderByDesc('Kode')->first('Kode');
         // return $last;
         // $last = DB::table('audits')->select('Kode')->get();
         // $last = DB::select('select top 1 [id] from [audits] order by [id] desc');

@@ -18,6 +18,9 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\DftHargaJualController;
 use App\Http\Controllers\DftHargaBeliController;
 
+use App\Http\Controllers\WorkOrderController;
+use App\Http\Controllers\PurchaseOrdersController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -65,4 +68,38 @@ Route::group([
     Route::get("chunk-supplier",[SuppliersController::class,'suppliers']);
     Route::resource("BrgHrgBeli", DftHargaBeliController::class);
     Route::resource("BrgHrgJual", DftHargaJualController::class);
+
+    Route::resource("purchase-orders", PurchaseOrdersController::class);
+    Route::get("purchase-orders/{from}/{to}",[PurchaseOrdersController::class,'index']);
+    Route::get('purchase-orders-supplier',[PurchaseOrdersController::class,'supplier']);
+    Route::get('purchase-orders-barang',[PurchaseOrdersController::class,'barang']);
+    Route::get('purchase-orders-gudang',[PurchaseOrdersController::class,'gudang']);
+    Route::get('purchase-orders-uang',[PurchaseOrdersController::class,'uang']);
+    Route::put('batal-po/{id}',[PurchaseOrdersController::class,'batalin']);
+    Route::get('purchase-orders-wo',[PurchaseOrdersController::class,'wo']);
+
+    Route::get('purchase-orders-jasa/{from}/{to}',[PurchaseOrdersController::class,'indexJasa']);
+    Route::post('purchase-orders-jasa',[PurchaseOrdersController::class,'storeJasa']);
+    Route::get('purchase-orders-jasa/{id}',[PurchaseOrdersController::class,'showJasa']);
+    Route::put('purchase-orders-jasa/{id}',[PurchaseOrdersController::class,'updateJasa']);
+
+    Route::get('wip-processing/{from}/{to}',[WorkOrderController::class,'wipProcessing']);
+    Route::put('wip-processing/{id}',[WorkOrderController::class,'updateWipProc']);
+    Route::get('wip-finance/{from}/{to}',[WorkOrderController::class,'wipFinance']);
+    Route::put('wip-finance/{id}',[WorkOrderController::class,'updateWipFinanc']);
+    Route::get('wip-claim/{from}/{to}',[WorkOrderController::class,'wipClaim']);
+    Route::put('wip-claim/{id}',[WorkOrderController::class,'updateWipClaim']);
+    Route::get('wip-scm/{from}/{to}',[WorkOrderController::class,'wipScm']);
+    Route::put('wip-scm/{id}',[WorkOrderController::class,'updateWipScm']);
+    Route::get('wip-analis/{from}/{to}',[WorkOrderController::class,'wipAnalis']);
+    Route::put('wip-analis/{id}',[WorkOrderController::class,'updateWipAnalis']);
+    Route::get('wo-lessor',[WorkOrderController::class,'lessor']);
+    Route::put('wo-ownrisk/{id}',[WorkOrderController::class,'updateOwnRisk']);
+    Route::get('wo-pic-scm',[WorkOrderController::class,'picScm']);
+
+    Route::resource("workOrder",WorkOrderController::class);
+    Route::put("contextMenu-wo/{id}",[WorkOrderController::class,'contextMenu']);
+    Route::get("workOrder/{from}/{to}",[WorkOrderController::class,'index']);
+    Route::put('report-wo/{id}',[WorkOrderController::class,'report']);
+    Route::put("batal-workOrder/{id}",[WorkOrderController::class, 'batalin']);
 });

@@ -110,9 +110,9 @@ class UnitController extends Controller
      * @param  \App\Models\Unit  $unit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Unit $unit,$id)
+    public function update(Request $request,$id)
     {
-        $unit = $unit::find($id);
+        $unit = Unit::find($id);
         $unit->Nama = $request->Nama;
         $unit->Product = $request->Product;
         $unit->Brand = $request->Brand;
