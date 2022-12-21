@@ -42,7 +42,7 @@ class WorkOrderController extends Controller
      */
     public function index($from,$to)
     {
-        $data = WorkOrder::with('pelanggan:Kode,Nama','uang:Kode,Nama'
+        $data = WorkOrder::with('pelanggan:Kode,Nama','uang:Kode,Nama','unit:Kode,Nama'
         // ,'pemilik:Kode,Nama','lessor:Kode,Nama','rangka.kendaraan:Kode,Nama','estimasi:KodeNota,NomorWO,TanggalKeluarFisik,NoTiketKeluar'
         )->where('KodeNota','like',substr($this->user->Kode,0,2).'%')
         // ->whereBetween('DiBuatTgl', [$from, $to])
@@ -261,6 +261,7 @@ class WorkOrderController extends Controller
         $data->DiUbahOleh = $this->user->Kode;
         $data->ReserveOutcome = $request->ReserveOutcome;
         $data->ReserveOutcomeJasa = $request->ReserveOutcomeJasa;
+        $data->Unit = $request->Unit;
         if ($this->user->WorkOrder()->save($data)) {
             //save detailnya belum ya 
             // for ($i=0; $i < count($request->keluhan); $i++) { 
@@ -573,7 +574,7 @@ class WorkOrderController extends Controller
         $data->DiUbahOleh = $this->user->Kode;
         $data->ReserveOutcome = $request->ReserveOutcome;
         $data->ReserveOutcomeJasa = $request->ReserveOutcomeJasa;
-
+        $data->Unit = $request->Unit;
         if ($data->save()) {
             // for ($i=0; $i < count($request->keluhan); $i++) { 
             //     if (isset($request->keluhan[$i]['NoUrut']) == false) {

@@ -78,6 +78,9 @@ class WorkOrder extends Model implements Auditable
     {
         return $date->format('Y-m-d H:i:s');
     }
+    public function unit(){
+        return $this->belongsTo(Unit::class,'Unit','Kode');
+    }
     public function bonBahan(){
         return $this->hasMany(NotaGudang::class,'KodeNota','KodeNota');
     }
