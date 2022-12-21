@@ -318,6 +318,12 @@ class PurchaseOrdersController extends Controller
                 $item['Diskon1'] = $item['Diskon'];
                 return $item;
             });
+            $jasa = collect($request->itemsJasa)->map(function ($item,$key) {
+                $item['Perkiraan'] = $item['KodePerkiraan'];
+                $item['Diskon1'] = $item['Diskon'];
+                return $item;
+            });
+            $purchaseOrder->itemsJasa()->createMany($jasa);
             $purchaseOrder->items()->createMany($barang);
 
             return response()->json([
@@ -406,6 +412,8 @@ class PurchaseOrdersController extends Controller
             return $q->with('barang:id,Kode,Nama,Merk,PartNumber1,Kendaraan','gudang:Kode,Nama','satuan:Barang,Rasio,Nama'
                 // ,'rpl:NoPartOrder,Barang,Jumlah,TerpenuhiPO'
             );
+        }])->with(['itemsJasa' => function ($q){
+            return $q->with('perkiraan:Kode,Nama');
         }])->find($id);
         return response()->json([
             'data' => $purchaseOrders,
@@ -531,6 +539,12 @@ class PurchaseOrdersController extends Controller
             $item['Diskon1'] = $item['Diskon'];
             return $item;
         });
+        $jasa_new = collect($request->new_itemsJasa)->map(function ($item,$key) use($last){
+            // $item['NoUrut'] = $key+1+$last['NoUrut'];
+            $item['Perkiraan'] = $item['KodePerkiraan'];
+            $item['Diskon1'] = $item['Diskon'];
+            return $item;
+        });
         if($purchaseOrder->save()){
             for ($i=0; $i < count($request->items); $i++) { 
                 $oldVal = ItemsPurchaseOrders::where('KodeNota',$request->KodeNota)
@@ -561,18 +575,37 @@ class PurchaseOrdersController extends Controller
                     'new_values' => collect($newVal)->toJson()
                 ]);
             }
-            // foreach ($request->items as $key => $value) {
-            //     $purchaseOrder->items()->updateOrCreate(
-            //         ['KodeNota' => $value['KodeNota'], 'NoUrut' => $value['NoUrut'], 'Barang' => $value['Barang']],
-            //         ['Gudang' => $value['Gudang'], 'Keterangan' => $value['Keterangan'], 
-            //             'Harga' => $value['Harga'],
-            //             'Diskon1' => $value['Diskon'],
-            //             'ETA' => isset($item['TanggalKirim']) ? $item['TanggalKirim'] : NULL
-            //         ]
-            //     );                
-            // }
-            // ItemsPurchaseOrders::upsert($d, ['KodeNota','NoUrut','Barang'], ['Gudang','Keterangan','Harga','Diskon1','ETA']);
+            for ($i=0; $i < count($request->itemsJasa); $i++) { 
+                $oldVal = ItemsPurchaseOrdersJasa::where('KodeNota',$request->KodeNota)
+                ->where('NoUrut',$request->itemsJasa[$i]['NoUrut'])
+                // ->where('JenisPekerjaan',$request->itemsJasa[$i]['JenisPekerjaan'])
+                ->get();
+                $newVal = [
+                    'Perkiraan' => $request->itemsJasa[$i]['KodePerkiraan'], 'Keterangan' => $request->itemsJasa[$i]['Keterangan'], 
+                    'Harga' => $request->itemsJasa[$i]['Harga'], 'Diskon1' => $request->itemsJasa[$i]['Diskon'],
+                    'Jumlah' => $request->itemsJasa[$i]['Jumlah'],
+                    // 'ETA' => isset($request->items[$i]['TanggalKirim']) ? $request->items[$i]['TanggalKirim'] : NULL
+                ];
+                ItemsPurchaseOrdersJasa::where('KodeNota',$request->KodeNota)
+                ->where('NoUrut',$request->itemsJasa[$i]['NoUrut'])
+                // ->where('JenisPekerjaan',$request->itemsJasa[$i]['JenisPekerjaan'])
+                ->update([
+                    'Perkiraan' => $request->itemsJasa[$i]['KodePerkiraan'], 'Keterangan' => $request->itemsJasa[$i]['Keterangan'], 
+                    'Harga' => $request->itemsJasa[$i]['Harga'], 'Diskon1' => $request->itemsJasa[$i]['Diskon'],
+                    'Jumlah' => $request->itemsJasa[$i]['Jumlah'],
+                ]);
+                DB::table('audits')->insert([
+                    'event' => 'updated',
+                    'user_type' => 'App\Models\User',
+                    'user_id' => $this->user->id,
+                    'auditable_type' => "App\Models\ItemsPurchaseOrdersJasa",
+                    'auditable_id' => $request->itemsJasa[$i]['NoUrut'],
+                    'old_values' => $oldVal->toJson(),
+                    'new_values' => collect($newVal)->toJson()
+                ]);
+            }
             $purchaseOrder->items()->createMany($barang_new);
+            $purchaseOrder->itemsJasa()->createMany($jasa_new);
             // $barang_update = $barang->toJson();
             if (!empty($request->hapus_items)) {
                 for ($i=0; $i < count($request->hapus_items); $i++) { 
@@ -590,59 +623,32 @@ class PurchaseOrdersController extends Controller
                         'new_values' => '[]'
                     ]);
                 }
-                return response()->json([
-                    "status"=>true,
-                    "data"=>$purchaseOrder,
-                    "items"=>$request->items,
-                    'new item'=>$barang_new,
-                    "delet item"=>$request->hapus_items
-                ],200);
             }
-            // for ($i=0; $i < count($request->items); $i++) {
-            //     if (isset($request->items[$i]['id']) == false) {
-            //         $last = ItemsPurchaseOrders::where('kodenota',$request->kode_nota)->latest('nourut')->first('nourut');
-            //         $urutan = $last['nourut'] + 1;
-            //         $item = new ItemsPurchaseOrders;
-            //         $item->gudang = $request->items[$i]['gudang'];
-            //         $item->barang = $request->items[$i]['barang']['Kode'];
-            //         $item->nourut = $urutan+1;
-            //         $item->jumlah = $request->items[$i]['jumlah'];
-            //         $item->harga = $request->items[$i]['harga'];
-            //         $item->satuan = $request->items[$i]['satuan'];
-            //         $item->diskon1 = $request->items[$i]['diskon'];
-            //         $item->subtotal = $request->items[$i]['subtotal'];
-            //         $purchaseOrder->items()->save($item);
-            //     }else{
-            //         $item = ItemsPurchaseOrders::find($request->items[$i]['id']);
-            //         $item->gudang = $request->items[$i]['gudang'];
-            //         $item->barang = $request->items[$i]['barang']['Kode'];
-            //         $item->jumlah = $request->items[$i]['jumlah'];
-            //         $item->harga = $request->items[$i]['harga'];
-            //         $item->satuan = $request->items[$i]['satuan'];
-            //         $item->diskon1 = $request->items[$i]['diskon'];
-            //         $item->subtotal = $request->items[$i]['subtotal'];
-            //         $item->save();
-            //     }
-            //     if (isset($request->hapus_items)) {
-            //         $hps = ItemsPurchaseOrders::whereIn('id',$request->hapus_items)->delete();
-            //     }
-            // }
-        }
-        // if($this->user->purchaseOrders()->save($purchaseOrders)){
-        //     return response()->json([
-        //         "status"=>true,
-        //         "purchaseOrders"=>$purchaseOrders
-        //     ]);
-        // }
-
-        // put tanpa jwt
-        // if ($customers->save()){
-        //     return response()->json([
-        //         "status" => true,
-        //         "customer" => $customers
-        //     ]);
-        // }
-        else {
+            if (!empty($request->hapus_itemsJasa)) {
+                for ($i=0; $i < count($request->hapus_itemsJasa); $i++) { 
+                    $hps = ItemsPurchaseOrdersJasa::where('KodeNota',$request->KodeNota)
+                    ->where('NoUrut',$request->hapus_itemsJasa[$i]['NoUrut'])
+                    // ->where('JenisPekerjaan',$request->hapus_itemsJasa[$i]['JenisPekerjaan'])
+                    ->delete();
+                    DB::table('audits')->insert([
+                        'event' => "deleted",
+                        'user_type' => 'App\Models\User',
+                        'user_id' => $this->user->id,
+                        'auditable_type' => "App\Models\ItemsPurchaseOrdersJasa",
+                        'auditable_id' => $request->hapus_itemsJasa[$i]['NoUrut'],
+                        'old_values' => collect($request->hapus_itemsJasa[$i])->toJson(),
+                        'new_values' => '[]'
+                    ]);
+                }
+            }
+            return response()->json([
+                "status"=>true,
+                "data"=>$purchaseOrder,
+                "items"=>$request->items,
+                'new item'=>$barang_new,
+                "delet item"=>$request->hapus_items
+            ],200);
+        } else {
             return response()->json([
                 "status"=>false,
                 "Message"=>"gagal update"
@@ -742,16 +748,16 @@ class PurchaseOrdersController extends Controller
     public function batalin(Request $request, $id)
     {
         $data = PurchaseOrders::find($id);
-        if (str_contains($data->KodeNota,'PO')) {
-            # code...
-            $cekReceive = ItemsPurchaseOrders::where('KodeNota',$data->KodeNota)->where('Terpenuhi','>',0)->first();
-            if (!empty($cekReceive)) {
-                return response()->json([
-                    "status"=>true,
-                    "message"=>"received"
-                ],200);
-            } else {
-                $oldVal = ItemsPurchaseOrders::where('KodeNota',$data->KodeNota)->get(['Barang','Jumlah']);
+        $cekReceive = ItemsPurchaseOrders::where('KodeNota',$data->KodeNota)->where('Terpenuhi','>',0)->first();
+        $cekReceiveJasa = ItemsPurchaseOrdersJasa::where('KodeNota',$data->KodeNota)->where('Terpenuhi','>',0)->first();
+        if (!empty($cekReceive) || !empty($cekReceiveJasa)) {
+            return response()->json([
+                "status"=>true,
+                "message"=>"received"
+            ],200);
+        } else {
+            $oldVal = ItemsPurchaseOrders::where('KodeNota',$data->KodeNota)->get(['Barang','Jumlah']);
+            if (!empty($oldVal)) {
                 DB::table('audits')->insert([
                     'event' => 'updated',
                     'user_type' => 'App\Models\User',
@@ -765,54 +771,36 @@ class PurchaseOrdersController extends Controller
                 ->update([
                     'Jumlah' => 0,
                 ]);
-                date_default_timezone_set('Asia/Makassar');
-                $tgl = date('d/m/y H:i:s A');
-                $keterangan = "Batal oleh ". $this->user->Kode . " - " . $this->user->Name . " Pada ". $tgl . " dengan alasan: " . $request->keterangan;
-                $data->Status = 'BATAL';
-                $data->KeteranganStatus = $keterangan;
-                $data->DiUbahOleh = $this->user->Kode;
-                $data->save();
-                return response()->json([
-                    "status"=>true,
-                    "message"=>"berhasil batalin"
-                ],200);
             }
-        } else {
-            $cekReceive = ItemsPurchaseOrdersJasa::where('KodeNota',$data->KodeNota)->where('Terpenuhi','>',0)->first();
-            if (!empty($cekReceive)) {
-                return response()->json([
-                    "status"=>true,
-                    "message"=>"received"
-                ],200);
-            } else {
-                $oldVal = ItemsPurchaseOrdersJasa::where('KodeNota',$data->KodeNota)->get(['Barang','Jumlah']);
+
+            $oldValJasa = ItemsPurchaseOrdersJasa::where('KodeNota',$data->KodeNota)->get(['KodeNota','Perkiraan','NoUrut','Jumlah']);
+            if (!empty($oldValJasa)) {
                 DB::table('audits')->insert([
                     'event' => 'updated',
                     'user_type' => 'App\Models\User',
                     'user_id' => $this->user->id,
                     'auditable_type' => "App\Models\ItemsPurchaseOrdersJasa",
                     'auditable_id' => 0,
-                    'old_values' => $oldVal,
+                    'old_values' => $oldValJasa,
                     'new_values' => 'BatalPO, Jumlah jadi 0'
                 ]);
                 ItemsPurchaseOrdersJasa::where('KodeNota',$data->KodeNota)
                 ->update([
                     'Jumlah' => 0,
                 ]);
-                date_default_timezone_set('Asia/Makassar');
-                $tgl = date('d/m/y H:i:s A');
-                $keterangan = "Batal oleh ". $this->user->Kode . " - " . $this->user->Name . " Pada ". $tgl . " dengan alasan: " . $request->keterangan;
-                $data->Status = 'BATAL';
-                $data->KeteranganStatus = $keterangan;
-                $data->DiUbahOleh = $this->user->Kode;
-                $data->save();
-                return response()->json([
-                    "status"=>true,
-                    "message"=>"berhasil batalin"
-                ],200);
             }
+            date_default_timezone_set('Asia/Makassar');
+            $tgl = date('d/m/y H:i:s A');
+            $keterangan = "Batal oleh ". $this->user->Kode . " - " . $this->user->Name . " Pada ". $tgl . " dengan alasan: " . $request->keterangan;
+            $data->Status = 'BATAL';
+            $data->KeteranganStatus = $keterangan;
+            $data->DiUbahOleh = $this->user->Kode;
+            $data->save();
+            return response()->json([
+                "status"=>true,
+                "message"=>"berhasil batalin"
+            ],200);
         }
-        
         
         return response()->json([
             "status"=>true,

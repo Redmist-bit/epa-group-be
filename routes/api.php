@@ -20,6 +20,7 @@ use App\Http\Controllers\DftHargaBeliController;
 
 use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\PurchaseOrdersController;
+use App\Http\Controllers\PembeliansController;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,4 +103,23 @@ Route::group([
     Route::get("workOrder/{from}/{to}",[WorkOrderController::class,'index']);
     Route::put('report-wo/{id}',[WorkOrderController::class,'report']);
     Route::put("batal-workOrder/{id}",[WorkOrderController::class, 'batalin']);
+
+    Route::resource("pembelian", PembeliansController::class);
+    Route::get("pembelian/{from}/{to}",[PembeliansController::class,'index']);
+    Route::get('pembelian-uang',[PembeliansController::class,'uang']);
+    Route::get('pembelian-supplier',[PembeliansController::class,'supplier']);
+    Route::get('pembelian-barang',[PembeliansController::class,'barang']);
+    Route::get('pembelian-gudang',[PembeliansController::class,'gudang']);
+    Route::get("pembelian-po",[PembeliansController::class, 'dataPo']);
+    Route::get("items-po/{id}",[PembeliansController::class,'itemsPo']);
+    Route::put("batal-beli/{id}",[PembeliansController::class,'batalin']);
+    Route::put('grid-beli/{id}',[PembeliansController::class,'updateGrid']);
+    Route::get('pembelian-jasa/{from}/{to}',[PembeliansController::class,'indexJasa']);
+    Route::post('pembelian-jasa',[PembeliansController::class,'storeJasa']);
+    Route::get('pembelian-jasa/{id}',[PembeliansController::class,'showJasa']);
+    Route::put('pembelian-jasa/{id}',[PembeliansController::class,'updateJasa']);
+    Route::get("pembelian-po-jasa",[PembeliansController::class, 'dataPoJasa']);
+    Route::get("items-po-jasa/{id}",[PembeliansController::class,'itemsPoJasa']);
+    Route::get("beli/cekPelunasan/{id}",[PembeliansController::class,'cekPelunasan']);
+    Route::get("report-pembelian/{id}",[PembeliansController::class,'report']);
 });
