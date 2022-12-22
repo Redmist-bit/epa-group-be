@@ -24,6 +24,9 @@ class PurchaseOrders extends Model implements Auditable
         'Apply' => 'boolean'
         // 'Tanggal' => 'datetime:d-m-Y'
     ];
+    public function unit(){
+        return $this->belongsTo(Unit::class,'Unit','Kode');
+    }
     public function itemsJasa(){
         return $this->hasMany(ItemsPurchaseOrdersJasa::class,'KodeNota','KodeNota');
     }

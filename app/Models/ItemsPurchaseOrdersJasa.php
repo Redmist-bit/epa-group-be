@@ -21,7 +21,9 @@ class ItemsPurchaseOrdersJasa extends Model implements Auditable
         'Harga',
         'Diskon1',
         'JenisPekerjaan',
-        'Perkiraan'
+        'Perkiraan',
+        'Unit',
+        'Site'
     ];
     protected $casts = [
         'Jumlah' => 'integer',

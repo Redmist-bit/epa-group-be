@@ -40,7 +40,9 @@ class ItemsPurchaseOrders extends Model implements Auditable
         'Diskon' => 'decimal:2',
         'SubTotal' => 'decimal:2'
     ];
-
+    public function unit(){
+        return $this->belongsTo(Unit::class,'Unit','Kode');
+    }
     public function barang()
     {
         return $this->belongsTo(Barangs::class,'Barang','Kode');

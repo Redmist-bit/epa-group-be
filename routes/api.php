@@ -22,6 +22,10 @@ use App\Http\Controllers\WorkOrderController;
 use App\Http\Controllers\PurchaseOrdersController;
 use App\Http\Controllers\PembeliansController;
 
+use App\Http\Controllers\PaymentVoucherController;
+
+use App\Http\Controllers\InvoiceController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -122,4 +126,26 @@ Route::group([
     Route::get("items-po-jasa/{id}",[PembeliansController::class,'itemsPoJasa']);
     Route::get("beli/cekPelunasan/{id}",[PembeliansController::class,'cekPelunasan']);
     Route::get("report-pembelian/{id}",[PembeliansController::class,'report']);
+
+    Route::resource('payment-voucher',PaymentVoucherController::class);
+    Route::get('payment-voucher-wo',[PaymentVoucherController::class,'dataWo']);
+    Route::get("payment-voucher/{from}/{to}",[PaymentVoucherController::class,'index']);
+    Route::put('batal-pv/{id}',[PaymentVoucherController::class,'batalin']);
+    Route::get("report-pv/{id}",[PaymentVoucherController::class,'report']);
+
+    Route::get('load-estimasi-inv',[InvoiceController::class,'load']);
+    Route::get('invoice-wo',[InvoiceController::class,'wo']);
+    Route::get('invoice-barang',[InvoiceController::class,'barangs']);
+    Route::get('invoice-perkiraan',[InvoiceController::class,'perkiraan']);
+    Route::resource('invoice',InvoiceController::class);
+    Route::get('invoice-uang',[InvoiceController::class,'uang']);
+    Route::get('invoice/{from}/{to}',[InvoiceController::class,'index']);
+    Route::put('batal-invoice/{id}',[InvoiceController::class,'batalin']);
+    Route::post('invoice-deductible',[InvoiceController::class,'storeDeductible']);
+    Route::get('invoice-deductible/{from}/{to}',[InvoiceController::class,'indexDeductible']);
+    Route::get('invoice-deductible/{id}',[InvoiceController::class,'showDeductible']);
+    Route::put('invoice-deductible/{id}',[InvoiceController::class,'updateDeductible']);
+    Route::get("inv/cekPelunasan/{id}",[InvoiceController::class,'cekPelunasan']);
+    Route::put('report-inv/{id}',[InvoiceController::class,'report']);
+    Route::put('invoice-batch/{id}',[InvoiceController::class,'updateBatch']);
 });

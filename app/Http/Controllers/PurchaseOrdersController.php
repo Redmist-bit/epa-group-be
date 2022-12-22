@@ -244,7 +244,7 @@ class PurchaseOrdersController extends Controller
         // return substr($last->kode_nota,0,13).str_pad(substr($last->kode_nota,13)+1,6,'0',STR_PAD_LEFT);
         if (!$last) {
             $kode = $kode.$periode.'/000001';
-            return $kode;
+            // return $kode;
         } elseif (substr($last->KodeNota,8,4) === $periode) {
             $nomer = substr($last->KodeNota,13);
             $kode = substr($last->KodeNota,0,13).str_pad($nomer+1, 6, '0', STR_PAD_LEFT);;
@@ -273,7 +273,7 @@ class PurchaseOrdersController extends Controller
         $purchaseOrder->Keterangan = $request->Keterangan;
         $purchaseOrder->Gudang = substr($this->user->Kode,0,4).'/0001';
         $purchaseOrder->DiUbahOleh = $this->user->Kode;
-
+        $purchaseOrder->Unit = $request->Unit;
         // $purchaseOrder->KodeNota = $kode;
         // $purchaseOrder->Tanggal = $request->tanggal;
         // $purchaseOrder->Supplier = $request->supplier;
@@ -320,6 +320,7 @@ class PurchaseOrdersController extends Controller
             });
             $jasa = collect($request->itemsJasa)->map(function ($item,$key) {
                 $item['Perkiraan'] = $item['KodePerkiraan'];
+                $item['Unit'] = $item['KodeUnit'];
                 $item['Diskon1'] = $item['Diskon'];
                 return $item;
             });
@@ -407,9 +408,11 @@ class PurchaseOrdersController extends Controller
      */
     public function show(PurchaseOrders $purchaseOrders, $id)
     {
-        $purchaseOrders = PurchaseOrders::with('supplier:id,Kode,Nama')->with('uang:Kode,Nama')->with('wo:KodeNota,ReserveOutcome,AvailableBudget,ReserveOutcomeJasa,AvailableBudgetJasa')
+        $purchaseOrders = PurchaseOrders::with('supplier:id,Kode,Nama')->with('uang:Kode,Nama')
+        ->with('wo:KodeNota,ReserveOutcome,AvailableBudget,ReserveOutcomeJasa,AvailableBudgetJasa')
+        ->with('unit:Kode,Nama')
         ->with('BillFrom:id,Kode,Nama')->with('SellFrom:id,Kode,Nama')->with(['items' => function ($q){
-            return $q->with('barang:id,Kode,Nama,Merk,PartNumber1,Kendaraan','gudang:Kode,Nama','satuan:Barang,Rasio,Nama'
+            return $q->with('barang:id,Kode,Nama,Merk,PartNumber1,Kendaraan','gudang:Kode,Nama','satuan:Barang,Rasio,Nama','unit:Kode,Nama'
                 // ,'rpl:NoPartOrder,Barang,Jumlah,TerpenuhiPO'
             );
         }])->with(['itemsJasa' => function ($q){
@@ -508,6 +511,7 @@ class PurchaseOrdersController extends Controller
         $purchaseOrder->Kurs = $request->Kurs;
         // $purchaseOrder->apply = $request->apply;
         $purchaseOrder->DiUbahOleh = $this->user->Kode;
+        $purchaseOrder->Unit = $request->Unit;
         $last = ItemsPurchaseOrders::where('KodeNota',$request->KodeNota)->latest('NoUrut')->first('NoUrut');
         // $barang = collect($request->items)->map(function ($item,$key) {
         //     // $item['ETA'] = isset($item['TanggalKirim']) ? $item['TanggalKirim'] : NULL;
