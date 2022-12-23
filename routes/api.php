@@ -26,6 +26,8 @@ use App\Http\Controllers\PaymentVoucherController;
 
 use App\Http\Controllers\InvoiceController;
 
+use App\Http\Controllers\MutasiController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -148,4 +150,11 @@ Route::group([
     Route::get("inv/cekPelunasan/{id}",[InvoiceController::class,'cekPelunasan']);
     Route::put('report-inv/{id}',[InvoiceController::class,'report']);
     Route::put('invoice-batch/{id}',[InvoiceController::class,'updateBatch']);
+
+    Route::resource("mutasi",MutasiController::class);
+    Route::get("mutasi/kas/{from}/{to}",[MutasiController::class,"indexKas"]);
+    Route::get("mutasi/bank/{from}/{to}",[MutasiController::class,"indexBank"]);
+    Route::put("batal-mutasi/{id}",[MutasiController::class,'batalin']);
+    Route::get('mutasi-pv',[MutasiController::class,'dataPv']);
+    Route::get('report-mutasi/{id}',[MutasiController::class,'report']);
 });
