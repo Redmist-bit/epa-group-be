@@ -28,6 +28,10 @@ use App\Http\Controllers\InvoiceController;
 
 use App\Http\Controllers\MutasiController;
 
+use App\Http\Controllers\HutangController;
+
+use App\Http\Controllers\PiutangController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -157,4 +161,16 @@ Route::group([
     Route::put("batal-mutasi/{id}",[MutasiController::class,'batalin']);
     Route::get('mutasi-pv',[MutasiController::class,'dataPv']);
     Route::get('report-mutasi/{id}',[MutasiController::class,'report']);
+
+    Route::resource("hutang",HutangController::class);
+    Route::get("hutang/{from}/{to}",[HutangController::class,"index"]);
+    Route::put("batal-hutang/{id}",[HutangController::class,'batalin']);
+    Route::post("hutang-pembelian",[HutangController::class, 'dataPembelian']);
+    Route::get("report-hutang/{id}",[HutangController::class,'report']);
+
+    Route::resource("piutang",PiutangController::class);
+    Route::get("piutang/{from}/{to}",[PiutangController::class,"index"]);
+    Route::put("batal-piutang/{id}",[PiutangController::class,'batalin']);
+    Route::post("piutang-invoice",[PiutangController::class, 'dataInvoice']);
+    Route::get("report-piutang/{id}",[PiutangController::class,'report']);
 });
