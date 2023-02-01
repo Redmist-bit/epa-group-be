@@ -32,6 +32,9 @@ use App\Http\Controllers\HutangController;
 
 use App\Http\Controllers\PiutangController;
 
+use App\Http\Controllers\PenagihanController;
+use App\Http\Controllers\CollectorController;
+use App\Http\Controllers\JurnalController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -173,4 +176,17 @@ Route::group([
     Route::put("batal-piutang/{id}",[PiutangController::class,'batalin']);
     Route::post("piutang-invoice",[PiutangController::class, 'dataInvoice']);
     Route::get("report-piutang/{id}",[PiutangController::class,'report']);
+
+    Route::resource("penagihan", PenagihanController::class);
+    Route::get("penagihan/{from}/{to}", [PenagihanController::class,'index']);
+    Route::get("penagihan-inv",[PenagihanController::class,'inv']);
+    Route::get("penagihan-customers",[PenagihanController::class,'customer']);
+    Route::put('batal-penagihan/{id}',[PenagihanController::class,'batalin']);
+    Route::resource('collector', CollectorController::class);
+    Route::get("report-penagihan/{id}",[PenagihanController::class,'report']);
+
+    Route::resource("jurnal",JurnalController::class);
+    Route::get("jurnal/{from}/{to}",[JurnalController::class,"index"]);
+    Route::put('batal-jurnal/{id}',[JurnalController::class,'batalin']);
+    Route::get("report-jurnal/{id}",[JurnalController::class,'report']);
 });
